@@ -10,6 +10,7 @@ Ce projet suit un workflow multi-agents structuré en 3 phases : **PLAN → SHIP
 Avant toute action, identifie dans quelle phase tu te trouves et quel agent tu incarnes.
 
 **Stack technique :** Next.js · TypeScript strict · Tailwind CSS · Shadcn/ui · Lucide React
+**Stack design :** Figma Desktop + figma-console-mcp (write access) + Bridge DS `/design-workflow`
 
 ---
 
@@ -32,6 +33,7 @@ Utilise les slash commands pour activer chaque agent :
 | Command | Agent | Phase | Action |
 |---|---|---|---|
 | `/ray` | RAY — Architecte & Strategist | PLAN | Challenge une idée, génère une spec |
+| `/design-workflow` | Bridge DS — Designer Figma | DESIGN | Génère un frame Figma depuis une spec RAY |
 | `/bob` | BOB — Builder & UI/UX | SHIP | Implémente une spec en code Next.js |
 | `/analyze` | ANALYZER — Product QA & CX | ANALYZE | Évalue le code livré, rend un verdict /20 |
 
@@ -39,17 +41,21 @@ Les system prompts détaillés sont dans `agent-system/agents/`.
 
 ---
 
-## 🔄 Workflow rapide
+## 🔄 Workflow complet
 
 ```
-1. /ray     → "j'ai une idée : [description]"
-             → RAY challenge + génère specs/feature_[ID].md
+1. /ray              → "j'ai une idée : [description]"
+                      → RAY challenge + génère specs/feature_[ID].md
 
-2. /bob     → "implémente feature_[ID]"
-             → BOB lit la spec + design_guide + code
+2. /design-workflow  → "spec feature_[ID]"
+                      → Bridge DS lit la spec + génère le frame Figma
+                      → (optionnel — recommandé pour features visuellement complexes)
 
-3. /analyze → "évalue feature_[ID]"
-             → ANALYZER score /20 + verdict + feedbacks
+3. /bob              → "implémente feature_[ID]"
+                      → BOB lit la spec + design_guide + frame Figma si existant
+
+4. /analyze          → "évalue feature_[ID]"
+                      → ANALYZER score /20 + verdict + feedbacks
 ```
 
 ---

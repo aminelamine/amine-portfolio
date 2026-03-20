@@ -8,7 +8,7 @@
 ## 📌 Méta
 
 **Projet :** Portfolio personnel — Amine Lamine
-**Dernière mise à jour :** 2026-03-18
+**Dernière mise à jour :** 2026-03-20
 **Horizon actuel :** MVP Public — < 1 mois
 
 ---
@@ -16,8 +16,8 @@
 ## 🗺️ Vue d'ensemble — Phases
 
 ```
-Phase 0 — Fondations (setup Next.js + design system)   ░░░░░░░░░░  [À faire]
-Phase 1 — MVP Core (Hero + About + Contact)             ░░░░░░░░░░  [À faire]
+Phase 0 — Fondations (setup Next.js + design system)   ██████████  [Terminé]
+Phase 1 — MVP Core (Hero + About + Contact)             ████░░░░░░  [En cours — 2/5]
 Phase 2 — Case Studies (1–2 projets)                    ░░░░░░░░░░  [Post-MVP]
 Phase 3 — IA Work / Contenu étendu                      ░░░░░░░░░░  [Non planifié]
 ```
@@ -30,11 +30,11 @@ Phase 3 — IA Work / Contenu étendu                      ░░░░░░░
 
 | # | Feature | Spec | Statut | Critère de done |
 |---|---|---|---|---|
-| F-001 | Layout global + Navigation | `specs/feature_001_layout-navigation.md` | TODO | Header sticky, routing Next.js fonctionnel, responsive mobile/desktop |
-| F-002 | Hero / Positionnement | `specs/feature_002_hero.md` | TODO | Tagline + positionnement Design × IA lisible en < 5s, CTA visible |
-| F-003 | About / Manifeste | `specs/feature_003_about-manifeste.md` | TODO | Section narrative qui démontre la réflexion IA + leadership, sans ressembler à un CV |
-| F-004 | Contact | `specs/feature_004_contact.md` | TODO | CTA clair, formulaire ou lien email fonctionnel, pas de stockage serveur |
-| F-005 | Intégration Obsolet | `specs/feature_005_obsolet-cta.md` | TODO | CTA vers la newsletter visible depuis la navigation et/ou le footer |
+| F-001 | Layout global + Navigation | `specs/feature_001_layout-navigation.md` | ✅ LIVRÉE (16/20 ANALYZER) | Header sticky, routing Next.js fonctionnel, responsive mobile/desktop |
+| F-002 | Hero / Positionnement | `specs/feature_002_hero.md` | ⚠️ LIVRÉE — ANALYZER PENDING | Tagline + positionnement Design × IA lisible en < 5s, CTA visible |
+| F-003 | About / Manifeste | `specs/feature_003_about-manifeste.md` | ✅ LIVRÉE — ANALYZER PENDING | Section narrative qui démontre la réflexion IA + leadership, sans ressembler à un CV |
+| F-004 | Contact | `specs/feature_004_contact.md` | ✅ LIVRÉE — ANALYZER PENDING | CTA clair, lien email mailto fonctionnel, pas de stockage serveur |
+| F-005 | Intégration Obsolet | `specs/feature_005_obsolet-cta.md` | ✅ LIVRÉE — ANALYZER PENDING | Section dédiée entre About et Contact, CTA outline vers newsletter |
 
 ---
 
@@ -104,3 +104,6 @@ Phase 3 — IA Work / Contenu étendu                      ░░░░░░░
 |---|---|---|
 | 2026-03-18 | Initialisation roadmap — MVP défini (F-001 à F-005) | Le Talent |
 | 2026-03-18 | Case studies reportés en Phase 2 — contenu non prêt | Le Talent |
+| 2026-03-20 | F-001 livrée — ANALYZER 16/20 ⚠️ (1 bug mineur ouvert : justify-center) | BOB + ANALYZER |
+| 2026-03-20 | F-002 livrée — validée visuellement, ANALYZER en attente | BOB |
+| 2026-03-20 | Figma MCP connecté (figma-console-mcp + Bridge DS /design-workflow) | Le Talent |
