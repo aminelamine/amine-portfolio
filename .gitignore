@@ -44,3 +44,9 @@ next-env.d.ts
 .claude/skills/design-workflow/references/knowledge-base/registries/*.json
 .claude/skills/design-workflow/references/knowledge-base/ui-references/screenshots/*.png
 .claude/skills/design-workflow/references/knowledge-base/ui-references/screenshots/*.jpg
+
+# MCP config — contient le token Figma, ne jamais commiter
+.mcp.json
+
+# Template agent-stack — a son propre repo GitHub séparé
+agent-stack-template/
