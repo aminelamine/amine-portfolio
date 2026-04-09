@@ -30,8 +30,112 @@
 | **Shadcn/ui** | Composants accessibles, ownership total | `latest` |
 | **Lucide React** | Iconographie (sparingly) | `latest` |
 | **Geist** | Typographie (intégrée Next.js 15) | `latest` |
+| **motion** | Animations React (L1–L2) — installé par défaut | `latest` |
+| **gsap** | Animations cinématiques (L3 uniquement) — opt-in, validation JO requise | `latest` |
 
 > ⚠️ BOB ne doit **pas** introduire de librairie UI non listée ici sans validation du Talent.
+
+---
+
+## 🎭 Motion Design — Système de Niveaux
+
+> Le niveau motion est une décision de spec, pas une décision de code.
+> **JO le définit dans la spec. BOB l'exécute. BOB ne choisit jamais le niveau lui-même.**
+> En l'absence de `motion_level` dans une spec → BOB applique **L0** sans exception.
+
+---
+
+### Les 4 niveaux
+
+#### L0 — Fonctionnel *(défaut)*
+**Librairie :** aucune. Tailwind + CSS natif uniquement.
+**Usage :** tout ce qui est fonctionnel — navigation, boutons, inputs, toasts.
+**Ce qui est autorisé :**
+- `transition-colors duration-150` sur les hover states
+- `transition-opacity` sur les états de chargement
+- `focus-visible:ring` sur les éléments interactifs
+- `hover:` et `active:` Tailwind
+
+**Règle :** si une animation peut être faite en CSS pur sans librairie, elle doit l'être.
+
+---
+
+#### L1 — Éditorial
+**Librairie :** `motion` (`npm install motion`)
+**Usage :** portfolios, dashboards, pages de contenu. Le niveau "sobre" enrichi.
+**Ce qui est autorisé :**
+- Une séquence d'entrée orchestrée par page (hero stagger au load)
+- `useInView` + `motion.div` pour scroll reveals (fade-up discret)
+- Maximum **3 `motion.div`** par page complète
+- Durées : 300–500ms, easing `ease-out`
+
+**Ce qui est interdit à ce niveau :**
+- `AnimatePresence` (réservé L2+)
+- Parallax
+- Animations en boucle (`repeat: Infinity`)
+
+---
+
+#### L2 — Expressif
+**Librairie :** `motion`
+**Usage :** landing pages, case studies, features à fort impact visuel.
+**Ce qui est autorisé :**
+- Page transitions via `AnimatePresence`
+- Layout animations (`layoutId` pour les éléments partagés)
+- Orchestration de sections (groupes de stagger)
+- Hover states enrichis (`whileHover`, `whileTap`)
+- Durées : jusqu'à 700ms pour les séquences orchestrées
+
+**Ce qui est interdit à ce niveau :**
+- ScrollTrigger (réservé L3)
+- Canvas ou WebGL
+- Animations > 700ms sur des éléments isolés
+
+---
+
+#### L3 — Cinématique
+**Librairie :** `motion` + `gsap` + `@gsap/react` *(opt-in — validation JO obligatoire dans la spec)*
+**Usage :** "wow moments" — onboarding flows, product demos, présentations.
+**Ce qui est autorisé :**
+- ScrollTrigger, timelines GSAP, sections épinglées
+- Animations pilotées par scroll (`useScroll`, `useTransform`)
+- Canvas/WebGL si justifié
+- Durées : dictées par la narration, pas par une contrainte fixe
+
+**Condition d'activation :** la spec doit contenir `motion_level: L3` ET une justification en 1 ligne rédigée par JO.
+
+---
+
+### Règle universelle (tous niveaux)
+
+```tsx
+// Non négociable — à intégrer dans tous les composants animés
+const prefersReducedMotion = window.matchMedia(
+  '(prefers-reduced-motion: reduce)'
+).matches
+
+// Ou via hook motion :
+import { useReducedMotion } from 'motion/react'
+const shouldReduce = useReducedMotion()
+```
+
+Si `prefers-reduced-motion` est activé → toutes les animations se réduisent à de simples transitions d'opacité (150ms max) ou sont désactivées.
+
+---
+
+### Patterns autorisés par niveau (référence rapide)
+
+| Pattern | L0 | L1 | L2 | L3 |
+|---|---|---|---|---|
+| CSS hover transitions | ✅ | ✅ | ✅ | ✅ |
+| Scroll reveal (fade-up) | ❌ | ✅ | ✅ | ✅ |
+| Hero stagger au load | ❌ | ✅ | ✅ | ✅ |
+| Page transitions | ❌ | ❌ | ✅ | ✅ |
+| Layout animations | ❌ | ❌ | ✅ | ✅ |
+| Hover enrichi (whileHover) | ❌ | ❌ | ✅ | ✅ |
+| ScrollTrigger / pinning | ❌ | ❌ | ❌ | ✅ |
+| Canvas / WebGL | ❌ | ❌ | ❌ | ✅ |
+| Animations en boucle | ❌ | ❌ | ❌ | ⚠️ justification requise |
 
 ---
 
@@ -258,7 +362,10 @@ Pour tout composant impliquant du chargement ou des données :
 ## 🚫 Anti-patterns (BOB ne fait jamais ça)
 
 - ❌ Inline styles `style={{...}}` — Tailwind uniquement
-- ❌ Animations > 200ms sur des éléments fonctionnels
+- ❌ Animations sans `motion_level` défini dans la spec (→ fallback L0 obligatoire)
+- ❌ Animations > 200ms sur des éléments fonctionnels (boutons, inputs, feedback states)
+- ❌ `motion.div` ou tout composant animé sans vérification `prefers-reduced-motion`
+- ❌ Niveau L3 sans validation explicite de JO dans la spec
 - ❌ Plus d'un `Button` variant="default" visible simultanément dans une section
 - ❌ Texte sur fond coloré non validé en contrast ratio
 - ❌ Images sans dimensions explicites (layout shift)
@@ -276,3 +383,4 @@ Pour tout composant impliquant du chargement ou des données :
 | 2026-03-18 | `max-w-3xl` sur le contenu éditorial | Portfolio ≠ dashboard — la colonne étroite force la lisibilité |
 | 2026-03-18 | Pas de dark mode en MVP | Complexité non justifiée — à évaluer post-MVP |
 | 2026-03-18 | Sonner pour les toasts (pas Toast legacy) | API plus simple, meilleure UX par défaut |
+| 2026-04-09 | Système de niveaux motion L0–L3 (`motion` par défaut, GSAP opt-in L3) | Flexibilité par projet sans risque de sur-animation par défaut — voir ADR-007 |

@@ -4,6 +4,12 @@
 > **Dernière mise à jour** : `[YYYY-MM-DD]`
 > **Lien Roadmap** : `roadmap.md#[ID]`
 
+```yaml
+motion_level: L0   # L0 | L1 | L2 | L3 — voir design_guide.md §Motion Design
+motion_zones: []   # ex: ["hero", "project-cards"] — zones concernées par le motion
+motion_note: ""    # Obligatoire si L3 : justification en 1 ligne rédigée par JO
+```
+
 ---
 
 ## 📋 Contexte & Problème
@@ -98,6 +104,8 @@ THEN [comportement de gestion d'erreur attendu]
 - [ ] La hiérarchie des actions (primary/secondary/destructive) est respectée
 - [ ] Le contraste WCAG AA est respecté sur tous les éléments
 - [ ] L'interface est navigable au clavier
+- [ ] Le `motion_level` est défini et les animations respectent les patterns autorisés pour ce niveau
+- [ ] `prefers-reduced-motion` est géré dans tous les composants animés
 
 ### Performance
 - [ ] `[Critère de performance si applicable — ex. : "La liste se charge en < 500ms sur une connexion 4G"]`

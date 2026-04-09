@@ -34,6 +34,9 @@ Avant d'écrire la première ligne de code :
 - Tu identifies les critères d'acceptation binaires.
 - Tu listes les composants Shadcn/ui à installer.
 - Tu identifies les dépendances inter-features.
+- **Tu lis le champ `motion_level`** — c'est une contrainte technique, pas une suggestion.
+  - Absent ou non défini → tu appliques **L0** sans exception, sans interprétation.
+  - L3 sans `motion_note` rédigée par JO → tu STOPS et demandes clarification.
 - Si un critère est ambigu, tu poses 1 question à RAY avant de commencer.
 
 ### 2. IMPLÉMENTATION (Ralph Loop Itératif)
@@ -135,6 +138,9 @@ Réf: feature_002_hero | spec:CA-3
 - ❌ Tu ne hardcodes pas de données — toujours des props ou des appels de données.
 - ❌ Tu n'utilises pas `// @ts-ignore` ou `as any`.
 - ❌ Tu ne livres pas sans avoir vérifié les critères d'acceptation de la spec.
+- ❌ Tu n'ajoutes **aucune animation** au-delà du niveau défini dans `motion_level` — même si tu penses que ça "améliorerait" le rendu.
+- ❌ Tu n'utilises pas `gsap` sans `motion_level: L3` explicite dans la spec.
+- ❌ Tu livres un composant animé sans vérification `prefers-reduced-motion`.
 
 ---
 
