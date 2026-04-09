@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProductDesigner Stack — Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0e1420;
+    --surface-2: #141c2e;
+    --border: #1e2a42;
+    --border-bright: #2a3a5e;
+
+    --ray: #f59e0b;
+    --ray-dim: rgba(245,158,11,0.12);
+    --ray-border: rgba(245,158,11,0.3);
+
+    --bridge: #06b6d4;
+    --bridge-dim: rgba(6,182,212,0.1);
+    --bridge-border: rgba(6,182,212,0.3);
+
+    --bob: #8b5cf6;
+    --bob-dim: rgba(139,92,246,0.12);
+    --bob-border: rgba(139,92,246,0.3);
+
+    --do: #10b981;
+    --do-dim: rgba(16,185,129,0.1);
+    --do-border: rgba(16,185,129,0.3);
+
+    --talent: #e2e8f0;
+    --talent-dim: rgba(226,232,240,0.06);
+    --talent-border: rgba(226,232,240,0.2);
+
+    --text: #c8d4e8;
+    --text-muted: #5a7099;
+    --text-dim: #3a4d6e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 40px 32px 60px;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14,26,60,0.8), transparent),
+      linear-gradient(180deg, #080c14 0%, #060a10 100%);
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  .header-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #e8f0ff;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .header-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Phase labels */
+  .phases-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .phase-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .phase-plan  { background: var(--ray-dim); color: var(--ray); border: 1px solid var(--ray-border); }
+  .phase-design { background: var(--bridge-dim); color: var(--bridge); border: 1px solid var(--bridge-border); }
+  .phase-ship  { background: var(--bob-dim); color: var(--bob); border: 1px solid var(--bob-border); }
+  .phase-analyze { background: var(--do-dim); color: var(--do); border: 1px solid var(--do-border); }
+
+  /* Main grid */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  /* Agent cards */
+  .agent-card {
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .agent-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .agent-ray { background: var(--ray-dim); border: 1px solid var(--ray-border); }
+  .agent-ray::before { background: var(--ray); }
+
+  .agent-bridge { background: var(--bridge-dim); border: 1px solid var(--bridge-border); }
+  .agent-bridge::before { background: var(--bridge); }
+
+  .agent-bob { background: var(--bob-dim); border: 1px solid var(--bob-border); }
+  .agent-bob::before { background: var(--bob); }
+
+  .agent-do { background: var(--do-dim); border: 1px solid var(--do-border); }
+  .agent-do::before { background: var(--do); }
+
+  .agent-name {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+  .agent-ray .agent-name { color: var(--ray); }
+  .agent-bridge .agent-name { color: var(--bridge); }
+  .agent-bob .agent-name { color: var(--bob); }
+  .agent-do .agent-name { color: var(--do); }
+
+  .agent-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .agent-command {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  .agent-ray .agent-command { background: rgba(245,158,11,0.15); color: var(--ray); }
+  .agent-bridge .agent-command { background: rgba(6,182,212,0.15); color: var(--bridge); }
+  .agent-bob .agent-command { background: rgba(139,92,246,0.15); color: var(--bob); }
+  .agent-do .agent-command { background: rgba(16,185,129,0.15); color: var(--do); }
+
+  .agent-inputs, .agent-outputs {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .agent-inputs span, .agent-outputs span {
+    display: block;
+    color: var(--text);
+    margin-top: 3px;
+    padding-left: 8px;
+    border-left: 2px solid var(--border-bright);
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 10px 0;
+  }
+
+  .agent-rule {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  /* Arrow row */
+  .arrows-row {
+    display: grid;
+    grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr;
+    align-items: center;
+    margin-bottom: 32px;
+    gap: 4px;
+  }
+
+  .arrow-spacer { /* empty space under card */ }
+
+  .arrow-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .arrow-line {
+    width: 100%;
+    height: 2px;
+    background: var(--border-bright);
+    position: relative;
+  }
+
+  .arrow-line::after {
+    content: '→';
+    position: absolute;
+    right: -6px;
+    top: -9px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Flow section */
+  .flow-section {
+    margin-bottom: 32px;
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Full workflow flow */
+  .workflow-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  .flow-step {
+    flex: 1;
+    padding: 16px;
+    position: relative;
+  }
+
+  .flow-step + .flow-step {
+    border-left: 1px solid var(--border);
+  }
+
+  .flow-step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .flow-step-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .flow-step-cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .flow-step-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .flow-step-output {
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .step-1 { background: linear-gradient(135deg, var(--ray-dim), transparent); }
+  .step-1 .flow-step-title { color: var(--ray); }
+  .step-1 .flow-step-cmd { background: rgba(245,158,11,0.12); color: var(--ray); }
+
+  .step-2 { background: linear-gradient(135deg, var(--bridge-dim), transparent); }
+  .step-2 .flow-step-title { color: var(--bridge); }
+  .step-2 .flow-step-cmd { background: rgba(6,182,212,0.12); color: var(--bridge); }
+
+  .step-3 { background: linear-gradient(135deg, var(--bob-dim), transparent); }
+  .step-3 .flow-step-title { color: var(--bob); }
+  .step-3 .flow-step-cmd { background: rgba(139,92,246,0.12); color: var(--bob); }
+
+  .step-4 { background: linear-gradient(135deg, var(--do-dim), transparent); }
+  .step-4 .flow-step-title { color: var(--do); }
+  .step-4 .flow-step-cmd { background: rgba(16,185,129,0.12); color: var(--do); }
+
+  .optional-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* Two column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  /* Context files */
+  .context-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .context-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .context-file {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .context-file:last-child { margin-bottom: 0; }
+
+  .file-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    padding-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .file-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+
+  .file-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .file-readers {
+    display: flex;
+    gap: 4px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+  }
+
+  .reader-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  .reader-ray { background: var(--ray-dim); color: var(--ray); border: 1px solid var(--ray-border); }
+  .reader-bob { background: var(--bob-dim); color: var(--bob); border: 1px solid var(--bob-border); }
+  .reader-do { background: var(--do-dim); color: var(--do); border: 1px solid var(--do-border); }
+
+  /* QA scoring */
+  .scoring-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .scoring-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+    font-size: 12px;
+  }
+
+  .score-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 50px;
+  }
+
+  .score-icon { font-size: 14px; }
+
+  .score-verdict { color: var(--text); font-weight: 600; flex: 1; }
+  .score-action { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+  .score-a { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
+  .score-a .score-badge { color: var(--do); }
+
+  .score-b { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
+  .score-b .score-badge { color: var(--ray); }
+
+  .score-c { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
+  .score-c .score-badge { color: #ef4444; }
+
+  .score-d { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+  .score-d .score-badge { color: #fca5a5; }
+
+  /* Tech stack */
+  .tech-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+
+  .tech-section h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+
+  .tech-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tech-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    width: 60px;
+    padding-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .tech-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-bright);
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Rules */
+  .rules-card {
+    background: var(--surface);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .rules-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ef4444;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .rule-item::before {
+    content: '—';
+    color: rgba(239,68,68,0.5);
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Talent node */
+  .talent-node {
+    background: var(--talent-dim);
+    border: 1px solid var(--talent-border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .talent-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .talent-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--talent);
+    margin-bottom: 2px;
+  }
+
+  .talent-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .talent-rules {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .talent-rule-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(226,232,240,0.08);
+    border: 1px solid rgba(226,232,240,0.15);
+    color: var(--text-muted);
+  }
+
+  /* Feedback loop visual */
+  .feedback-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+
+  .feedback-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .fb-from, .fb-to {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .fb-arrow {
+    color: var(--text-dim);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .fb-label {
+    color: var(--text-muted);
+    font-size: 11px;
+    flex: 1;
+  }
+
+  .fb-condition {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-left {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .footer-right {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-eyebrow">architecture · v1.0</div>
+    <h1>ProductDesigner Stack</h1>
+    <div class="header-sub">Système multi-agents → Next.js + Figma · PLAN → DESIGN → SHIP → ANALYZE</div>
+  </div>
+
+  <!-- Le Talent -->
+  <div class="talent-node">
+    <div class="talent-icon">◈</div>
+    <div style="flex:1">
+      <div class="talent-name">Le Talent</div>
+      <div class="talent-desc">Orchestrateur central. A le dernier mot sur toutes les décisions. Challenge, arbitre et valide à chaque phase.</div>
+      <div class="talent-rules">
+        <span class="talent-rule-tag">Valide les specs (go/no-go)</span>
+        <span class="talent-rule-tag">Maintient client_vision.md</span>
+        <span class="talent-rule-tag">Gère la knowledge base</span>
+        <span class="talent-rule-tag">Max 2 cycles QA → BOB avant arbitrage</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase labels -->
+  <div class="phases-row">
+    <div class="phase-label phase-plan">① Plan</div>
+    <div class="phase-label phase-design">② Design <span class="optional-badge">optionnel</span></div>
+    <div class="phase-label phase-ship">③ Ship</div>
+    <div class="phase-label phase-analyze">④ Analyze</div>
+  </div>
+
+  <!-- Agent cards -->
+  <div class="main-grid">
+
+    <!-- JO -->
+    <div class="agent-card agent-ray">
+      <div class="agent-name">JO</div>
+      <div class="agent-role">Architecte · Strategist</div>
+      <div class="agent-command">/jo</div>
+      <div class="agent-inputs">⤵ Inputs
+        <span>Idée brute du Talent</span>
+        <span>client_vision.md</span>
+        <span>roadmap.md</span>
+      </div>
+      <div class="divider"></div>
+      <div class="agent-outputs">⤴ Output
+        <span>specs/feature_[ID].md</span>
+        <span>3 questions sparring</span>
+      </div>
+      <div class="agent-rule">❌ Ne code jamais</div>
+    </div>
+
+    <!-- Bridge DS -->
+    <div class="agent-card agent-bridge">
+      <div class="agent-name">Bridge DS</div>
+      <div class="agent-role">Designer Figma</div>
+      <div class="agent-command">/design-workflow</div>
+      <div class="agent-inputs">⤵ Inputs
+        <span>specs/feature_[ID].md</span>
+        <span>Figma Desktop + MCP</span>
+        <span>design_guide.md</span>
+      </div>
+      <div class="divider"></div>
+      <div class="agent-outputs">⤴ Output
+        <span>Frame Figma annoté</span>
+        <span>Design tokens appliqués</span>
+      </div>
+      <div class="agent-rule">⚡ Recommandé features visuelles complexes</div>
+    </div>
+
+    <!-- BOB -->
+    <div class="agent-card agent-bob">
+      <div class="agent-name">BOB</div>
+      <div class="agent-role">Builder · UI/UX Engineer</div>
+      <div class="agent-command">/bob</div>
+      <div class="agent-inputs">⤵ Inputs
+        <span>specs/feature_[ID].md</span>
+        <span>design_guide.md</span>
+        <span>Frame Figma (si existant)</span>
+        <span>roadmap.md</span>
+      </div>
+      <div class="divider"></div>
+      <div class="agent-outputs">⤴ Output
+        <span>Code Next.js /app + /components</span>
+        <span>Rapport conformance auto-évalué</span>
+      </div>
+      <div class="agent-rule">❌ Ne spécifie jamais</div>
+    </div>
+
+    <!-- DO -->
+    <div class="agent-card agent-do">
+      <div class="agent-name">DO</div>
+      <div class="agent-role">Product QA · CX Analyzer</div>
+      <div class="agent-command">/do</div>
+      <div class="agent-inputs">⤵ Inputs
+        <span>Code livré par BOB</span>
+        <span>specs/feature_[ID].md</span>
+        <span>client_vision.md</span>
+      </div>
+      <div class="divider"></div>
+      <div class="agent-outputs">⤴ Output
+        <span>Score /20 (4 dimensions)</span>
+        <span>Verdict + feedbacks actionnables</span>
+      </div>
+      <div class="agent-rule">❌ N'invente pas de critères</div>
+    </div>
+
+  </div>
+
+  <!-- Workflow flow bar -->
+  <div class="section-title">Workflow séquentiel</div>
+  <div class="workflow-flow">
+    <div class="flow-step step-1">
+      <div class="flow-step-num">STEP 01</div>
+      <div class="flow-step-title">Idée → Spec</div>
+      <div class="flow-step-cmd">/jo "j'ai une idée : …"</div>
+      <div class="flow-step-desc">JO lit le contexte, challenge avec 3 questions, itère avec le Talent jusqu'à validation.</div>
+      <div class="flow-step-output">→ specs/feature_[ID].md <br>statut: VALIDÉE TALENT</div>
+    </div>
+    <div class="flow-step step-2">
+      <div class="flow-step-num">STEP 02 <span class="optional-badge">opt.</span></div>
+      <div class="flow-step-title">Spec → Figma</div>
+      <div class="flow-step-cmd">/design-workflow "spec feature_[ID]"</div>
+      <div class="flow-step-desc">Bridge DS génère le frame Figma depuis la spec. Recommandé pour features visuellement complexes.</div>
+      <div class="flow-step-output">→ Frame Figma annoté</div>
+    </div>
+    <div class="flow-step step-3">
+      <div class="flow-step-num">STEP 03</div>
+      <div class="flow-step-title">Spec → Code</div>
+      <div class="flow-step-cmd">/bob "implémente feature_[ID]"</div>
+      <div class="flow-step-desc">BOB lit la spec + design_guide + frame Figma. Code en Ralph Loop itératif (6 étapes).</div>
+      <div class="flow-step-output">→ /app · /components <br>Rapport conformance</div>
+    </div>
+    <div class="flow-step step-4">
+      <div class="flow-step-num">STEP 04</div>
+      <div class="flow-step-title">Code → Verdict</div>
+      <div class="flow-step-cmd">/do "évalue feature_[ID]"</div>
+      <div class="flow-step-desc">DO évalue sur 4 dimensions, rend un score /20 et des feedbacks actionnables vers BOB ou JO.</div>
+      <div class="flow-step-output">→ Score /20 + Verdict</div>
+    </div>
+  </div>
+
+  <!-- Two column: Context + Scoring -->
+  <div class="two-col">
+
+    <!-- Context files -->
+    <div class="context-card">
+      <h3>📂 Knowledge Base partagée</h3>
+
+      <div class="context-file">
+        <div class="file-icon">◻</div>
+        <div>
+          <div class="file-name">client_vision.md</div>
+          <div class="file-desc">Vision client, personas, JTBD, contraintes business</div>
+          <div class="file-readers">
+            <span class="reader-tag reader-ray">RAY</span>
+            <span class="reader-tag reader-do">DO</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="context-file">
+        <div class="file-icon">◻</div>
+        <div>
+          <div class="file-name">roadmap.md</div>
+          <div class="file-desc">Features NOW / NEXT / LATER, KPIs, backlog, out-of-scope</div>
+          <div class="file-readers">
+            <span class="reader-tag reader-ray">RAY</span>
+            <span class="reader-tag reader-bob">BOB</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="context-file">
+        <div class="file-icon">◻</div>
+        <div>
+          <div class="file-name">design_guide.md</div>
+          <div class="file-desc">Design tokens, composants Shadcn autorisés, anti-patterns UI</div>
+          <div class="file-readers">
+            <span class="reader-tag reader-bob">BOB</span>
+            <span class="reader-tag reader-do">DO</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="context-file">
+        <div class="file-icon">◻</div>
+        <div>
+          <div class="file-name">specs/feature_[ID].md</div>
+          <div class="file-desc">Spec vivante générée par RAY, validée Talent. Contrat entre agents.</div>
+          <div class="file-readers">
+            <span class="reader-tag reader-bob">BOB</span>
+            <span class="reader-tag reader-do">DO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QA Scoring -->
+    <div class="scoring-card">
+      <h3>⚡ Scoring DO — Verdict /20</h3>
+
+      <div class="score-row score-a">
+        <div class="score-badge">≥ 18</div>
+        <div class="score-icon">✅</div>
+        <div class="score-verdict">VALIDÉ</div>
+        <div class="score-action">→ Le Talent</div>
+      </div>
+
+      <div class="score-row score-b">
+        <div class="score-badge">14–17</div>
+        <div class="score-icon">⚠️</div>
+        <div class="score-verdict">Réserves</div>
+        <div class="score-action">→ BOB (corrections mineures)</div>
+      </div>
+
+      <div class="score-row score-c">
+        <div class="score-badge">10–13</div>
+        <div class="score-icon">❌</div>
+        <div class="score-verdict">REJETÉ</div>
+        <div class="score-action">→ BOB (rework complet)</div>
+      </div>
+
+      <div class="score-row score-d">
+        <div class="score-badge">&lt; 10</div>
+        <div class="score-icon">🚨</div>
+        <div class="score-verdict">Re-spec</div>
+        <div class="score-action">→ RAY (nouvelle spec)</div>
+      </div>
+
+      <div style="margin-top: 14px; padding: 10px; background: var(--surface-2); border-radius: 6px; border: 1px solid var(--border);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px;">Règle circuit-breaker</div>
+        <div style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">Max <strong style="color: var(--text)">2 cycles</strong> DO → BOB avant arbitrage manuel du Talent.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section-title">Stack technique</div>
+  <div class="tech-section">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;">Frontend</div>
+        <div class="tech-row">
+          <span class="tech-tag">Next.js</span>
+          <span class="tech-tag">TypeScript strict</span>
+          <span class="tech-tag">Tailwind CSS</span>
+          <span class="tech-tag">Shadcn/ui</span>
+          <span class="tech-tag">Lucide React</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;">Design</div>
+        <div class="tech-row">
+          <span class="tech-tag">Figma Desktop</span>
+          <span class="tech-tag">figma-console-mcp</span>
+          <span class="tech-tag">Bridge DS</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;">Orchestration</div>
+        <div class="tech-row">
+          <span class="tech-tag">Claude Code</span>
+          <span class="tech-tag">CLAUDE.md</span>
+          <span class="tech-tag">GSD (opt.)</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;">Règles de code</div>
+        <div class="tech-row">
+          <span class="tech-tag">zéro any</span>
+          <span class="tech-tag">zéro @ts-ignore</span>
+          <span class="tech-tag">&lt; 150 lignes/composant</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invariant rules -->
+  <div class="section-title">Règles invariantes</div>
+  <div class="rules-card">
+    <h3>⛔ Contraintes système</h3>
+    <div class="rule-item">Ne jamais coder sans spec validée — <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;">statut: VALIDÉE TALENT</code> obligatoire dans la spec</div>
+    <div class="rule-item">Ne jamais modifier <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;">/components/ui/</code> — ownership Shadcn total</div>
+    <div class="rule-item">Ne jamais introduire une librairie UI absente de <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;">design_guide.md</code> sans validation Talent</div>
+    <div class="rule-item">JO ne code pas · BOB ne spécifie pas · DO n'invente pas de critères</div>
+    <div class="rule-item">Chaque agent préfixe ses messages : <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;">[JO]</code> <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;">[BOB]</code> <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;">[ANALYZER]</code></div>
+  </div>
+
+  <!-- Drift warning -->
+  <div style="margin-top: 24px; padding: 16px 20px; border-radius: 10px; background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.25);">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#f59e0b; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:10px; font-weight:600;">⚠ Drift de nomenclature détecté</div>
+    <div style="font-size:12px; color:#94a3b8; line-height:1.7;">
+      Le <strong style="color:#e2e8f0;">CLAUDE.md</strong> (source de vérité) utilise les noms <strong style="color:#f59e0b;">JO</strong> + <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:3px;">/jo</code> et <strong style="color:#10b981;">DO</strong> + <code style="font-family:'JetBrains Mono',monospace; font-size:10px; background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:3px;">/do</code>.<br>
+      Les fichiers suivants sont <strong style="color:#fca5a5;">en retard</strong> et utilisent encore les anciens noms :<br><br>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#64748b;">agent-system/agents/</span><strong style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#e2e8f0;">RAY_system_prompt.md</strong> → à renommer en <strong style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#f59e0b;">JO_system_prompt.md</strong><br>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#64748b;">agent-system/agents/</span><strong style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#e2e8f0;">ANALYZER_system_prompt.md</strong> → à renommer en <strong style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#10b981;">DO_system_prompt.md</strong><br>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#64748b;">agent-system/</span><strong style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#e2e8f0;">AGENT_SYSTEM.md</strong> → références à RAY/ANALYZER/commandes /ray et /analyze à mettre à jour<br>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#64748b;">agent-system/context/</span><strong style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#e2e8f0;">client_vision.md</strong> → "Valeurs Produit (arbitrage BOB & RAY)" → à corriger en JO
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-left">ProductDesigner Stack · PLAN → DESIGN → SHIP → ANALYZE</div>
+    <div class="footer-right">généré le 2026-03-30 · source: CLAUDE.md</div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 # Feature Spec — F-004 : Contact
-> **Genere par** : RAY
+> **Généré par** : JO
 > **Statut** : `[ ] DRAFT  [x] VALIDEE TALENT  [ ] EN DEV  [ ] EN REVIEW  [ ] LIVREE`
 > **Derniere mise a jour** : `2026-03-19`
 > **Lien Roadmap** : `roadmap.md#F-004`
@@ -100,32 +100,38 @@ THEN le CTA principal recoit le focus en premier
 
 ---
 
-## Criteres d'Acceptation Binaires
+## Critères d'Acceptation — Validés INVEST
+
+> Chaque critère a passé le gate INVEST de JO : Independent · Negotiable · Valuable · Estimable · Small · Testable.
+> Chaque critère est BINAIRE (VRAI ou FAUX). Jamais "devrait", "généralement", "si possible".
+> DO coche cette liste pour rendre son verdict.
 
 ### Fonctionnels
-- [ ] La section porte l'id `contact` (ancre depuis le header et le hero CTA)
-- [ ] Le titre de section utilise l'echelle Heading 1 (`text-3xl font-bold tracking-tight`)
-- [ ] Un texte d'invitation (1-2 phrases) explique quel type de contact est bienvenu
-- [ ] Le CTA principal est un `Button variant="default"` qui declenche un `mailto:`
-- [ ] L'adresse email est visible en texte dans la section (pas seulement dans le mailto)
-- [ ] Des liens secondaires vers LinkedIn et Obsolet sont presents
-- [ ] Les liens secondaires ouvrent dans un nouvel onglet (`target="_blank"` + `rel="noopener noreferrer"`)
-- [ ] Les liens secondaires portent un indicateur visuel de lien externe
-- [ ] Sur mobile, le CTA principal occupe la largeur disponible (`w-full` sous md)
-- [ ] Le contenu est centralise dans `lib/data.ts`
+- [ ] Un clic sur "Me contacter" depuis le hero scrolle jusqu'à la section contact
+- [ ] Un clic sur "Contact" depuis le header scrolle jusqu'à la section contact
+- [ ] La section contient un texte qui mentionne explicitement au moins un type de demande attendu (projet, question sur la démarche, ou collaboration)
+- [ ] Un clic sur le CTA principal ouvre le client email de l'utilisateur avec l'adresse pré-remplie
+- [ ] L'adresse email est visible en texte dans la section (pas seulement dans le CTA)
+- [ ] Des liens secondaires vers LinkedIn et Obsolet sont présents
+- [ ] Les liens secondaires s'ouvrent dans un nouvel onglet sans quitter la page
+- [ ] Chaque lien secondaire affiche une icône (↗) visible à droite de son label
+- [ ] Sur mobile, le CTA principal occupe la largeur disponible
+
+### États UI
+- [ ] **Error state** : En l'absence de client email configuré, l'adresse email reste visible en texte copiable dans la section
+> Note : Loading, Empty et Success states non applicables — section statique sans interaction asynchrone.
 
 ### Design System
-- [ ] 1 seul `Button variant="default"` dans la section (le mailto)
-- [ ] Les liens secondaires utilisent `variant="outline"` ou un style lien (`text-muted-foreground`)
-- [ ] Le spacing de section respecte `py-16 md:py-24`
-- [ ] Le contenu textuel respecte `max-w-3xl`
-- [ ] Le contraste WCAG AA est respecte
-- [ ] L'interface est navigable au clavier avec outline de focus visible
+- [ ] La section contient un seul CTA de niveau primaire visible
+- [ ] Les liens secondaires sont visuellement moins saillants que le CTA principal (hiérarchie lisible au premier regard)
+- [ ] Le contraste WCAG AA est respecté sur tous les éléments textuels et interactifs
+
+### Accessibilité
+- [ ] Tous les éléments interactifs de la section reçoivent le focus clavier dans l'ordre visuel
+- [ ] Chaque élément focusé affiche un outline de focus visible
 
 ### Performance
-- [ ] La section est un Server Component pur
-- [ ] Aucun layout shift au chargement
-- [ ] Zero JavaScript cote client pour cette section
+- [ ] Aucun layout shift visible au chargement de la section
 
 ---
 
@@ -233,17 +239,19 @@ THEN le CTA principal recoit le focus en premier
 
 ## Notes Techniques pour BOB
 
-- **`components/contact.tsx`** — Server Component pur. Zero interactivite.
-- **Donnees** — Ajouter `CONTACT` dans `lib/data.ts` avec `title`, `description`, `email`, `ctaText`. Reutiliser les URLs deja presentes dans `FOOTER_LINKS`.
-- **Mailto** — Le CTA est un `<a href="mailto:lamine.amine@gmail.com">` enveloppe dans `buttonVariants({ variant: "default" })` via `asChild` ou directement style.
-- **Email visible** — Afficher l'email en `text-sm text-muted-foreground` sous le CTA pour le cas ou le mailto ne fonctionne pas.
-- **Liens secondaires** — Reutiliser `FOOTER_LINKS` de `lib/data.ts`. Les afficher en `inline-flex` avec `gap-4`, style `text-sm text-muted-foreground hover:text-foreground`.
+- **`components/contact.tsx`** — Server Component pur. Zero interactivité. Zéro JavaScript côté client.
+- **Données** — Ajouter `CONTACT` dans `lib/data.ts` avec `title`, `description`, `email`, `ctaText`. Réutiliser les URLs déjà présentes dans `FOOTER_LINKS`.
+- **Mailto** — Le CTA est un `<a href="mailto:lamine.amine@gmail.com">` enveloppé dans `buttonVariants({ variant: "default" })` via `asChild` ou directement style.
+- **Email visible** — Afficher l'email en `text-sm text-muted-foreground` sous le CTA pour le cas où le mailto ne fonctionne pas.
+- **Liens secondaires** — Réutiliser `FOOTER_LINKS` de `lib/data.ts`. Les afficher en `inline-flex` avec `gap-4`, style `text-sm text-muted-foreground hover:text-foreground`. Icône ↗ après chaque label.
+- **Layout** — Titre `text-3xl font-bold tracking-tight`. Spacing `py-16 md:py-24`. Contenu centré `max-w-3xl`.
+- **Responsive** — CTA `w-full` sous `md:`. Liens secondaires passent en colonne sous `sm:`.
 - **page.tsx** — Remplacer le placeholder `#contact` par `<Contact />`.
-- **Email** — L'adresse `lamine.amine@gmail.com` est a confirmer par le Talent. Utiliser une constante dans `lib/data.ts`.
+- **Email** — L'adresse `lamine.amine@gmail.com` est à confirmer par le Talent. Utiliser une constante dans `lib/data.ts`.
 
 ---
 
-## Notes pour ANALYZER
+## Notes pour DO
 
 - Verifier que le CTA "Me contacter" du hero scrolle bien jusqu'a cette section
 - Verifier que le mailto fonctionne sur desktop et mobile
@@ -258,4 +266,4 @@ THEN le CTA principal recoit le focus en premier
 
 | Date | Version | Changement | Par |
 |---|---|---|---|
-| 2026-03-19 | v0.1 | Creation initiale | RAY |
+| 2026-03-19 | v0.1 | Création initiale | JO |

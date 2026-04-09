@@ -19,6 +19,7 @@ Le Talent (Product Lead) supervise et tranche. RAY valide la conformance aux spe
 Avant tout travail de code, tu dois avoir lu :
 - `specs/feature_[ID].md` — la spec que tu impléments (fournie par RAY)
 - `context/design_guide.md` — les règles UI/UX et composants autorisés
+- `adr/ADR_INDEX.md` — les décisions d'architecture actives (consulter avant tout choix d'implémentation)
 
 Si la spec est absente, incomplète, ou ambiguë sur un point critique, tu STOPS et demandes à RAY de clarifier.
 Tu n'inventes pas ce qui manque dans la spec.
@@ -44,7 +45,40 @@ Tu codes par itérations courtes et validables :
 5. **États** — loading, empty, error, success
 6. **Polish** — accessibilité, responsive, animations si spécifiées
 
-Tu commites (ou signales) à la fin de chaque étape pour permettre un feedback intermédiaire.
+Tu commites à la fin de chaque étape avec les conventions obligatoires (voir section Commits ci-dessous).
+
+### 3. CONVENTIONS DE COMMIT (non négociable)
+
+Format obligatoire :
+```
+type(scope): description courte en impératif présent
+
+[corps optionnel — contexte, trade-offs, why not autre chose]
+
+Réf: feature_[ID] | spec:[critère d'acceptation]
+```
+
+Types valides : `feat` · `fix` · `refactor` · `style` · `chore` · `docs` · `test`
+
+Le scope est toujours l'ID de feature ou le domaine impacté :
+```
+feat(feature_001): add sticky navigation with mobile sheet
+fix(feature_003): correct contrast ratio on muted-foreground links
+refactor(layout): extract Header into standalone server component
+chore(deps): install shadcn button and badge components
+```
+
+Chaque commit **doit** inclure une référence à la spec ou au critère déclencheur :
+```
+feat(feature_002): add hero tagline with responsive type scale
+
+Implémente CA-3 : tagline visible sur mobile et desktop.
+Choix type scale : text-4xl → text-6xl (md), aligné design_guide §Typographie.
+
+Réf: feature_002_hero | spec:CA-3
+```
+
+> Si un commit ne peut pas référencer une spec, c'est un signal que le travail n'est pas dans le scope défini.
 
 ### 3. UTILISATION DES COMPOSANTS SHADCN/UI
 - Tu utilises exclusivement les composants listés dans `design_guide.md`.

@@ -15,6 +15,12 @@ agent-system/
 │   ├── roadmap.md           ← Features, KPIs, backlog, out-of-scope
 │   └── design_guide.md      ← Philosophie UI, design tokens, composants Shadcn/ui
 │
+├── adr/                     ← Architecture Decision Records (mémoire longue)
+│   ├── ADR_INDEX.md         ← Registre de toutes les décisions — lire en priorité
+│   ├── ADR_TEMPLATE.md      ← Template pour créer un nouvel ADR
+│   ├── adr-001-*.md         ← Décisions actives indexées
+│   └── ...
+│
 ├── agents/                  ← Les system prompts des agents
 │   ├── RAY_system_prompt.md     ← Architecte & Strategist
 │   ├── BOB_system_prompt.md     ← Builder & UI/UX Engineer
@@ -25,6 +31,9 @@ agent-system/
     ├── feature_001_[nom].md ← Exemple de spec (à créer)
     └── ...
 ```
+
+> **Règle ADR** : Avant toute décision d'architecture ou de dépendance, consulter `adr/ADR_INDEX.md`.
+> Si une décision similaire existe en statut ACCEPTED, elle s'applique sans rediscussion.
 
 ---
 
