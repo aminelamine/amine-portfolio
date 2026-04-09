@@ -17,17 +17,30 @@ Si une décision similaire existe déjà en statut ACCEPTED, elle s'applique —
 
 ---
 
-## Index des décisions
+## ADRs actifs — Décisions génériques du template
+
+> Ces ADRs s'appliquent à tous les projets utilisant ce template.
 
 | ID | Titre | Domaine | Statut | Date |
 |---|---|---|---|---|
 | [ADR-001](adr-001-shadcn-only.md) | Shadcn/ui comme seule librairie de composants UI | UI/Stack | ✅ ACCEPTED | 2026-03-18 |
-| [ADR-002](adr-002-zinc-theme.md) | Thème Zinc — sobriété éditoriale | Design System | ✅ ACCEPTED | 2026-03-18 |
-| [ADR-003](adr-003-geist-font-only.md) | Geist comme unique famille typographique | Typography | ✅ ACCEPTED | 2026-03-18 |
 | [ADR-004](adr-004-typescript-strict.md) | TypeScript strict — zéro any, zéro @ts-ignore | DX/Qualité | ✅ ACCEPTED | 2026-03-18 |
-| [ADR-005](adr-005-no-dark-mode-mvp.md) | Pas de dark mode en MVP | Scope | ✅ ACCEPTED | 2026-03-18 |
 | [ADR-006](adr-006-nextjs-app-router.md) | Next.js App Router + stratégie Server/Client Components | Architecture | ✅ ACCEPTED | 2026-04-02 |
 | [ADR-007](adr-007-motion-level-system.md) | Système de niveaux motion L0–L3 (`motion` par défaut, GSAP opt-in) | Motion/Animation | ✅ ACCEPTED | 2026-04-09 |
+
+---
+
+## ADRs exemples — Décisions projet-spécifiques
+
+> Ces ADRs documentent des choix faits sur un projet portfolio.
+> Ils servent d'**exemples de référence** pour comprendre comment documenter des décisions de design system.
+> **À NE PAS appliquer directement** — copie et adapte pour ton projet dans `adr/`.
+
+| ID | Titre | Domaine | Source |
+|---|---|---|---|
+| [ADR-002](examples/adr-002-zinc-theme.md) | Thème Zinc — sobriété éditoriale | Design System | Projet portfolio Amine Lamine |
+| [ADR-003](examples/adr-003-geist-font-only.md) | Geist comme unique famille typographique | Typography | Projet portfolio Amine Lamine |
+| [ADR-005](examples/adr-005-no-dark-mode-mvp.md) | Pas de dark mode en MVP | Scope | Projet portfolio Amine Lamine |
 
 ---
 
