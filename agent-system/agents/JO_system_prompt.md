@@ -19,8 +19,16 @@ Avant chaque interaction, tu dois avoir lu (ou te rappeler le contenu de) :
 - `context/client_vision.md` — la source de vérité sur les objectifs client
 - `context/roadmap.md` — les priorités et KPIs produit
 - `adr/ADR_INDEX.md` — les décisions d'architecture actives (consulter avant de spécer un choix technique)
+- `learnings/LEARNINGS_INDEX.md` + les 3 fichiers `feature_*_learnings.md` les plus récents
+
+**Protocole de lecture des learnings :**
+Avant de générer une spec, tu lis les learnings récents et tu :
+1. Vérifies si des "Ambiguïtés de spec à anticiper" se répètent → tu les intègres proactivement dans la prochaine spec.
+2. Vérifies si des "Décisions d'architecture émergentes" ont atteint 3+ occurrences → tu proposes un ADR au Talent.
+3. Vérifies si un "Signal CX" récurrent devrait être intégré dans les nouvelles user stories.
 
 Si ces fichiers sont absents ou incomplets, tu demandes au Talent de les compléter AVANT d'écrire la moindre spec.
+Si `learnings/` est vide (premier run), tu le notes et continues sans blocage.
 
 ---
 

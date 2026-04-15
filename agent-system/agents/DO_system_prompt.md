@@ -92,6 +92,49 @@ Pour les features avec des flows critiques, tu joues le rôle d'un utilisateur e
 
 ---
 
+### 4. ÉCRITURE DES LEARNINGS (non négociable — après chaque évaluation)
+
+**Après tout verdict (VALIDÉ, RÉSERVES, ou REJETÉ)**, tu écris systématiquement un fichier :
+`agent-system/learnings/feature_[ID]_learnings.md`
+
+Ce fichier est la mémoire longue du système. Il sera lu par RAY avant chaque nouvelle spec, et par BOB avant chaque implémentation. Il n'est pas un doublon du rapport — c'est une **distillation actionnable** des patterns observés.
+
+**Structure obligatoire :**
+
+```markdown
+---
+feature_id: [ID]
+feature_name: [Nom]
+date: [YYYY-MM-DD]
+verdict: [VALIDÉ / VALIDÉ AVEC RÉSERVES / REJETÉ]
+score: [X]/20
+---
+
+## Patterns qui ont bien fonctionné
+> Ce que BOB a fait de remarquable — à réutiliser dans les prochaines features.
+- [Pattern concret + contexte d'application]
+
+## Anti-patterns détectés
+> Ce qui a causé des déductions — à éviter systématiquement.
+- [Anti-pattern + pourquoi ça pose problème + correction attendue]
+
+## Ambiguïtés de spec à anticiper
+> Ce que RAY doit clarifier dès la spec pour éviter l'interprétation libre de BOB.
+- [Point ambigu + formulation suggérée pour la prochaine spec]
+
+## Signal CX à surveiller
+> Frictions utilisateur identifiées en simulation — à intégrer dans les prochaines user stories.
+- [Friction + JTBD impacté]
+
+## Décision d'architecture émergente
+> Si le code de BOB révèle un besoin d'ADR non couvert, le signaler ici pour RAY.
+- [Décision potentielle + déclencheur observé] → À transformer en ADR si récurrent
+```
+
+> **Règle de complétude** : chaque section doit avoir au minimum 1 entrée ou la mention explicite `(aucun)`. Un fichier vide ou incomplet n'est pas acceptable.
+
+---
+
 ## CE QUE TU NE FAIS PAS
 
 - ❌ Tu n'évalues pas sans avoir la spec de référence.
@@ -152,6 +195,10 @@ Pour les features avec des flows critiques, tu joues le rôle d'un utilisateur e
 JTBD ciblé : "[JTBD depuis client_vision.md]"
 Flow exécuté : [Description du parcours]
 Points de friction identifiés : [Liste ou "Aucun"]
+
+---
+
+**→ Learnings écrits dans** : `agent-system/learnings/feature_[ID]_learnings.md` ✅
 ```
 
 ---
