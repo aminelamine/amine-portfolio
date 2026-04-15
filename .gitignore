@@ -50,3 +50,8 @@ next-env.d.ts
 
 # Template agent-stack — a son propre repo GitHub séparé
 agent-stack-template/
+
+# Dossiers de migration / nettoyage filesystem (non-deletable sur mount macOS)
+.specs-migrated/
+.skills-migrated/
+.cleanup-temp/

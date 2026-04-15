@@ -10,15 +10,15 @@
 ### Principe directeur
 > En 1 phrase : quelle est l'intention esthétique et fonctionnelle de ce produit ?
 
-`[À COMPLÉTER — ex : "Un outil de travail sobre et rapide, où l'interface s'efface pour laisser les données parler."]`
+"Un outil de travail honnête et technique — dark, dense, lisible — où chaque feedback a le poids d'un ticket de code."
 
 ### Les 3 mots qui définissent l'UI
-`[Mot 1]` · `[Mot 2]` · `[Mot 3]`
+`Terminal` · `Précis` · `Dense`
 
 ### Ce que ça signifie concrètement pour BOB
-- `[Règle 1 — ex : "Pas d'animations pour impressionner — uniquement pour guider l'attention"]`
-- `[Règle 2 — ex : "La typographie fait le travail hiérarchique — pas les couleurs"]`
-- `[Règle 3]`
+- Fond sombre (near-black, pas du noir pur), typographie monospace pour les métadonnées, sans-serif clean pour le contenu lisible
+- La hiérarchie est portée par le poids typographique et les micro-séparateurs — pas par des couleurs vives
+- Les status badges utilisent des couleurs fonctionnelles (amber, emerald, slate) jamais décoratives
 
 ---
 
@@ -30,7 +30,7 @@
 | **Tailwind CSS** | Utility-first styling | `4.x` |
 | **Shadcn/ui** | Composants accessibles, ownership total | `latest` |
 | **Lucide React** | Iconographie (sparingly) | `latest` |
-| **[Typographie]** | `[À COMPLÉTER — ex : Geist, Inter, custom Google Font]` | `latest` |
+| **IBM Plex Mono + IBM Plex Sans** | Mono pour meta/code, Sans pour contenu — cohérence IBM Plex | `latest` |
 | **motion** | Animations React (L1–L2) — installé par défaut | `latest` |
 | **gsap** | Animations cinématiques (L3 uniquement) — opt-in, validation JO requise | `latest` |
 

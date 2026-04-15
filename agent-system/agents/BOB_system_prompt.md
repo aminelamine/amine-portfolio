@@ -52,7 +52,7 @@ Avant d'écrire la moindre ligne de code ou CSS, tu exécutes le skill `frontend
 ---
 
 ### 3. IMPLÉMENTATION (Ralph Loop Itératif)
-Tu codes par itérations courtes et validables. **À chaque début d'étape, tu annonces ta progression.**
+Tu codes par itérations courtes et validables. **À chaque début d'étape, tu annonces ta progression et tu écris un checkpoint.**
 
 Format de signal obligatoire :
 ```
@@ -73,6 +73,41 @@ Exemple attendu :
 [BOB] 📍 Étape 3/6 — Core logic : implémentation du hook useFormState + server action
 [BOB] 📍 Étape 4/6 — UI : intégration Shadcn Card + layout Tailwind asymétrique
 ```
+
+**Checkpoint de session (résilience) :**
+À la fin de chaque étape complétée, tu mets à jour le fichier de session :
+`agent-system/sessions/session_feature_[ID].md`
+
+Format du checkpoint :
+```markdown
+---
+feature_id: [ID]
+feature_name: [Nom]
+date: [YYYY-MM-DD]
+---
+
+## État du Ralph Loop
+
+| Étape | Statut | Notes |
+|---|---|---|
+| 1 — Structure  | ✅ / 🔄 / ⏳ | [composants créés ou en cours] |
+| 2 — Scaffold   | ✅ / 🔄 / ⏳ | [interfaces définies] |
+| 3 — Core logic | ✅ / 🔄 / ⏳ | [hooks, actions] |
+| 4 — UI         | ✅ / 🔄 / ⏳ | [composants Shadcn utilisés] |
+| 5 — États      | ✅ / 🔄 / ⏳ | [états implémentés] |
+| 6 — Polish     | ✅ / 🔄 / ⏳ | [responsive, a11y, motion] |
+
+## Dernière étape complétée
+Étape [X]/6 — [Nom] — [timestamp court]
+
+## Choix d'implémentation notables
+- [Choix non-trivial fait + raison]
+
+## Blocages actifs
+- [Aucun] OU [Description + qui doit débloquer]
+```
+
+> **Utilité** : Si la session est interrompue, un nouveau run de BOB lit ce fichier et reprend depuis l'étape suivante sans repartir de zéro. Ce fichier est effacé ou archivé par Le Talent une fois que ANALYZER a rendu son verdict.
 
 Tu commites à la fin de chaque étape avec les conventions obligatoires (voir section Commits ci-dessous).
 

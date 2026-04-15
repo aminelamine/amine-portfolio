@@ -10,7 +10,7 @@
 agent-system/
 ├── AGENT_SYSTEM.md          ← Ce fichier (tu es ici)
 │
-├── context/                 ← La mémoire partagée des agents
+├── context/                 ← La mémoire partagée des agents (contenu stable = cache-friendly)
 │   ├── client_vision.md     ← Objectifs client, JTBD, contraintes, valeurs produit
 │   ├── roadmap.md           ← Features, KPIs, backlog, out-of-scope
 │   └── design_guide.md      ← Philosophie UI, design tokens, composants Shadcn/ui
@@ -22,9 +22,17 @@ agent-system/
 │   └── ...
 │
 ├── agents/                  ← Les system prompts des agents
-│   ├── RAY_system_prompt.md     ← Architecte & Strategist
+│   ├── JO_system_prompt.md      ← Architecte & Strategist
 │   ├── BOB_system_prompt.md     ← Builder & UI/UX Engineer
-│   └── ANALYZER_system_prompt.md ← Product QA & CX
+│   └── DO_system_prompt.md      ← Product QA & CX
+│
+├── learnings/               ← Mémoire longue auto-maintenue par ANALYZER ← NOUVEAU
+│   ├── LEARNINGS_INDEX.md   ← Index des patterns — lire en priorité
+│   ├── LEARNING_TEMPLATE.md ← Template pour chaque learning
+│   └── feature_*_learnings.md ← Un fichier par feature évaluée
+│
+├── sessions/                ← Checkpoints BOB pour résilience mid-run ← NOUVEAU
+│   └── session_feature_[ID].md ← État du Ralph Loop, effacé après verdict ANALYZER
 │
 └── specs/                   ← Les specs vivantes générées par RAY
     ├── feature_template.md  ← Template à copier pour chaque nouvelle feature
@@ -91,10 +99,14 @@ ANALYZER évalue sur 4 dimensions (score /20)
         ├── Score 14-17 → ⚠️ Réserves → BOB (corrections mineures)
         ├── Score 10-13 → ❌ REJETÉ → BOB (rework)
         └── Score < 10  → 🚨 Re-spec → RAY
+        ↓ (dans tous les cas)
+ANALYZER écrit learnings/feature_[ID]_learnings.md   ← NOUVEAU
+ANALYZER met à jour learnings/LEARNINGS_INDEX.md     ← NOUVEAU
+Le Talent archive sessions/session_feature_[ID].md   ← NOUVEAU
 ```
 
 **Déclencheur :** `"ANALYZER, évalue la feature [ID] — code livré par BOB"`
-**Output :** Rapport avec verdict, score /20, feedbacks actionnables
+**Output :** Rapport avec verdict, score /20, feedbacks actionnables + fichier learnings
 
 ---
 
@@ -183,6 +195,46 @@ npx get-shit-done-cc@latest
 ```
 
 Les fichiers de contexte de ce système (`client_vision.md`, `roadmap.md`, `design_guide.md`) sont directement compatibles avec le format de knowledge base de GSD.
+
+---
+
+## ⚡ Optimisation Cache-Prompt (performance)
+
+Le cache de contexte réduit la latence et le coût de chaque invocation d'agent. Pour maximiser les cache hits :
+
+### Règle de structure des fichiers de contexte
+
+> **Stable en tête, volatile en queue.**
+
+Chaque fichier de contexte doit être structuré ainsi :
+
+```
+[SECTION STABLE — ne change jamais entre features]
+  → Philosophie, valeurs, contraintes fondamentales
+  → Design tokens, composants autorisés
+  → ADRs ACCEPTED
+
+[SECTION SEMI-STABLE — change rarement]
+  → Personas, JTBD principaux
+  → KPIs produit, définition du succès
+
+[SECTION VOLATILE — change à chaque feature]
+  → Backlog, features en cours, statuts
+  → Notes de la dernière session
+```
+
+Le modèle peut réutiliser le cache sur les sections stables même quand le contenu volatile change. Si tu permutes l'ordre (volatile en tête), le cache est invalidé à chaque run.
+
+### Comportements par version de modèle
+
+> Ces notes documentent des quirks observés empiriquement. À réviser à chaque upgrade de modèle.
+
+| Modèle | Comportement observé | Impact sur la stack |
+|---|---|---|
+| claude-sonnet-3.7 | "Context anxiety" : BOB peut demander des confirmations excessives sur des choix évidents en fin de long contexte | Mitigation : Ralph Loop checkpoints pour garder le contexte frais |
+| claude-opus-4+ | Comportement plus autonome sur les choix d'implémentation | Surveiller si le Brief Esthétique gate reste nécessaire ou peut être allégé |
+
+> **Règle** : Ne jamais encoder une règle comportementale comme "invariante" si elle compense un quirk modèle-spécifique. La mettre dans ce tableau à la place.
 
 ---
 

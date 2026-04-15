@@ -7,9 +7,9 @@
 
 ## 🗺️ Contexte Projet
 
-**Nom du projet :** `[À COMPLÉTER]`
-**Date de dernière mise à jour :** `[YYYY-MM-DD]`
-**Statut :** `[ ] Discovery  [ ] Build  [ ] Launch  [ ] Growth`
+**Nom du projet :** `Critique — Design Review Tracker`
+**Date de dernière mise à jour :** `2026-04-14`
+**Statut :** `[x] Build`
 
 ---
 
@@ -18,23 +18,23 @@
 > Décris 2 à 3 personas. Pour chaque persona, réponds aux 4 questions ci-dessous.
 > Sois factuel et spécifique — évite les généralités comme "tout le monde" ou "les utilisateurs".
 
-### Persona 1 — [Nom / Rôle]
+### Persona 1 — Selin, Product Designer senior
 
 | Champ | Valeur |
 |---|---|
-| Profil | `[Qui est cette personne — rôle, contexte, niveau d'expertise]` |
-| Comportement | `[Ce qu'elle fait aujourd'hui pour résoudre son problème]` |
-| Stack mentale | `[Ce qu'elle cherche — résultat, pas fonctionnalité]` |
-| Risque | `[Ce qui la ferait partir ou rejeter le produit]` |
+| Profil | Designer senior dans une scale-up, 6 ans d'xp, travaille avec 3 équipes dev en parallèle |
+| Comportement | Fait ses reviews dans Figma Comments ou Notion, relance manuellement les devs en Slack |
+| Stack mentale | Veut savoir en 10 secondes "où en est ce feedback que j'ai laissé il y a 3 jours" |
+| Risque | Si l'outil lui demande de saisir plus d'infos que dans Figma, elle l'abandonne immédiatement |
 
-### Persona 2 — [Nom / Rôle]
+### Persona 2 — Kévin, Lead Front-end
 
 | Champ | Valeur |
 |---|---|
-| Profil | `[À COMPLÉTER]` |
-| Comportement | `[À COMPLÉTER]` |
-| Stack mentale | `[À COMPLÉTER]` |
-| Risque | `[À COMPLÉTER]` |
+| Profil | Dev front expérimenté, lit rarement Figma, travaille depuis son IDE et son kanban Linear |
+| Comportement | Ignore les feedbacks Figma jusqu'à ce que le designer le mentionne en standup |
+| Stack mentale | Veut une liste claire de "ce qu'on attend de moi", triée par criticité |
+| Risque | Si c'est un outil de plus à connecter ou notifier, il ne l'utilisera pas |
 
 ---
 
@@ -44,10 +44,10 @@
 > Un JTBD par persona principale.
 
 **JTBD Persona 1 :**
-*"Quand `[situation]`, je veux `[motivation]`, pour `[résultat]`."*
+*"Quand je termine une review Figma, je veux tracker l'état de chaque feedback sans effort supplémentaire, pour ne plus perdre de temps à relancer les devs manuellement."*
 
 **JTBD Persona 2 :**
-*"Quand `[situation]`, je veux `[motivation]`, pour `[résultat]`."*
+*"Quand je commence une session de dev, je veux voir la liste des feedbacks design en attente triés par criticité, pour traiter les plus importants en premier sans aller dans Figma."*
 
 ---
 
